@@ -8,6 +8,8 @@
 - '요금 폭탄' 걱정 없이 안전하게 테스트할 수 있는 환경을 제공합니다.
 
 ---
+- 임시 정리
+---
 ## Local Environment Setup
 1. AWS CLI 설치 및 확인
 - [AWS CLI 공식](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
