@@ -1,3 +1,3 @@
 module cgs-sample
 
-go 1.24.4
+go 1.23 // aws running go 1.23.8
