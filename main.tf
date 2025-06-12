@@ -56,13 +56,15 @@ resource "aws_instance" "cgs_server" {
   instance_type   = "t2.micro"                       
   security_groups = [aws_security_group.cgs_sg.name] # 위에서 생성한 보안 그룹을 적용
 
+  key_name = "cgs-key" # EC2 인스턴스에 접근하기 위한 SSH 키 페어 이름 - pem 만들어오기
+
   # user_data : EC2 인스턴스가 시작될 때 실행되는 스크립트
   user_data = <<-EOF
         #!/bin/bash
         # 서버 환경 설정 및 게임 서버 실행
         yum update -y
         yum install -y git golang
-        git clone https://github.com/rosmontisu/cloud-game-server.git /home/ec2-user/app
+        git clone https://github.com/rosmontisu/cloud-game-starter.git /home/ec2-user/app
         cd /home/ec2-user/app/samples/go-echo
         go build -o server .
         nohup ./server > /home/ec2-user/server.log 2>&1 &
