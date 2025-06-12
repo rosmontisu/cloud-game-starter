@@ -66,6 +66,7 @@ resource "aws_instance" "cgs_server" {
         yum install -y git golang
         git clone https://github.com/rosmontisu/cloud-game-starter.git /home/ec2-user/app
         cd /home/ec2-user/app/samples/go-echo
+        export GOCACHE=/tmp/gocache
         go build -o server .
         nohup ./server > /home/ec2-user/server.log 2>&1 &
     EOF
