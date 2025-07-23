@@ -52,8 +52,8 @@ data "aws_ami" "amazon_linux_2" {
 # 3. EC2 인스턴스 생성
 resource "aws_instance" "cgs_server" {
   # ami = "ami-<ID>" # Amazon Linux 2 AMI (ap-northeast-2)
-  ami = data.aws_ami.amazon_linux_2.id # 위에서 동적으로 찾은 AMI ID 사용
-  instance_type   = "t2.micro"                       
+  ami             = data.aws_ami.amazon_linux_2.id # 위에서 동적으로 찾은 AMI ID 사용
+  instance_type   = "t2.micro"
   security_groups = [aws_security_group.cgs_sg.name] # 위에서 생성한 보안 그룹을 적용
 
   key_name = "cgs-key" # EC2 인스턴스에 접근하기 위한 SSH 키 페어 이름 - pem 만들어오기
