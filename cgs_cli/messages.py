@@ -1,5 +1,3 @@
-# cgs-cli/messages.py
-
 MESSAGES = {
     "en": {
         "DEPLOY_START": "Starting server deployment...",

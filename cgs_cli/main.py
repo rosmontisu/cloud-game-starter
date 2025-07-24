@@ -4,7 +4,7 @@ import subprocess
 import os
 import locale
 import sys
-from messages import MESSAGES # messages.py
+from .messages import MESSAGES # messages.py
 TERRAFORM_DIR = ".." # Terraform 코드가 있는 부모 디렉토리 경로 설정
 
 def get_system_language():
