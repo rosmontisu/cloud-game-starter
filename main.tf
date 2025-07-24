@@ -69,26 +69,25 @@ resource "aws_instance" "cgs_server" {
         #!/bin/bash
         set -e # 스크립트 실행 중 오류 발생 시 즉시 중단
 
+        export server_language="${server_language}"
+
         APP_DIR="/home/ec2-user/app"
         LOG_FILE="/home/ec2-user/server.log"
 
         # 공통 작업: 기본 패키지 업데이트, git 설치, git clone, 로그 파일 생성 및 권한 설정
         yum update -y
         yum install -y git
-
-        ## 임시로 dev/3로 테스트합니다
+        ## !! 임시로 dev/3로 테스트합니다 !!
         #sudo -u ec2-user git clone https://github.com/rosmontisu/cloud-game-starter.git $APP_DIR
         sudo -u ec2-user git clone -b dev/3 --single-branch https://github.com/rosmontisu/cloud-game-starter.git $APP_DIR
-
-
         touch $LOG_FILE
         chown ec2-user:ec2-user $LOG_FILE
 
         ## -- 선택된 언어에 따라 다른 작업 수행 -- 
 
         # C# 서버 배포
-        if [ "$${server_language}" == "csharp" ]; then # '$' -> '$$' (이스케이프)
-          echo "Deploying C# server..." > $LOG_FILE
+        if [ "$server_language" == "csharp" ]; then
+          echo "Deploying C# server..." >> $LOG_FILE
 
           rpm -Uvh https://packages.microsoft.com/config/centos/7/packages-microsoft-prod.rpm
           yum install -y dotnet-sdk-7.0 # .NET 7 SDK 설치 (Amazon Linux 2 기준)
@@ -98,8 +97,8 @@ resource "aws_instance" "cgs_server" {
           sudo -u ec2-user nohup dotnet run >> $LOG_FILE 2>&1 &
 
         # 기본값 (Go) 배포
-        elif [ "$${server_language}" == "go" ]; then
-          echo "Deploying Go server..." > $LOG_FILE
+        elif [ "$server_language" == "go" ]; then
+          echo "Deploying Go server..." >> $LOG_FILE
 
           yum install -y golang
 
@@ -110,7 +109,7 @@ resource "aws_instance" "cgs_server" {
           sudo -u ec2-user nohup ./server >> $LOG_FILE 2>&1 &
 
         else
-          echo "Unknown server language: $${server_language}" > $LOG_FILE
+          echo "Unknown server language: $server_language" >> $LOG_FILE
           exit 1
 
     fi
