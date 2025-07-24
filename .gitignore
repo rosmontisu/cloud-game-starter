@@ -243,4 +243,22 @@ pyrightconfig.json
 
 # End of https://www.toptal.com/developers/gitignore/api/go,python
 
+# .gitignore 파일 하단에 추가
 
+# C# / .NET
+# ----------------
+# 빌드 결과물 폴더
+[Bb]in/
+[Oo]bj/
+
+# Visual Studio 관련 파일
+*.user
+*.userosscache
+*.sln.docstates
+*.suo
+.vs/
+*.[Cc]ache
+*.[Rr]esx
+
+# Rider 관련 파일
+.idea/
