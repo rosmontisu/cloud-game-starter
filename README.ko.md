@@ -1,12 +1,12 @@
 # ☁️ Cloud Game Starter (CGS)
 
 <p align="center">
-  <!-- TODO: 프로젝트 로고 이미지를 추가하면 좋습니다. -->
-  <!-- <img src="YOUR_PROJECT_LOGO_URL_HERE" alt="Cloud Game Starter Logo" width="200"/> -->
+  <!-- TODO: 추후에 프로젝트 로고등을 추가. -->
+  <!-- <img src="PROJECT_LOGO_URL" alt="Cloud Game Starter Logo" width="200"/> -->
 </p>
 
 <p align="center">
-  <strong>단 하나의 명령어로 클라우드에 나만의 게임 서버를 배포하세요.</strong>
+  <strong>단 하나의 명령어로 클라우드에 게임 서버를 배포하세요.</strong>
   <br />
   학생, 인디 개발자, 그리고 클라우드를 처음 접하는 모든 이를 위한 오픈소스 자동화 툴입니다.
 </p>
@@ -20,7 +20,7 @@
   <a href="https://pypi.org/project/cgs-cli/">
     <img src="https://img.shields.io/pypi/v/cgs-cli" alt="PyPI version">
   </a>
-  <a href="https://github.com/YOUR_USERNAME/cloud-game-starter/blob/main/LICENSE">
+  <a href="https://github.com/rosmontisu/cloud-game-starter/blob/main/LICENSE">
     <img src="https://img.shields.io/pypi/l/cgs-cli" alt="License">
   </a>
   <a href="https://github.com/psf/black">
