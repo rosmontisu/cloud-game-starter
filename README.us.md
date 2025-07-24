@@ -1,8 +1,6 @@
 # ☁️ Cloud Game Starter (CGS)
 
 <p align="center">
-  <!-- TODO: Add your project logo here -->
-  <!-- <img src="YOUR_PROJECT_LOGO_URL_HERE" alt="Cloud Game Starter Logo" width="200"/> -->
 </p>
 
 <p align="center">
@@ -20,7 +18,7 @@
   <a href="https://pypi.org/project/cgs-cli/">
     <img src="https://img.shields.io/pypi/v/cgs-cli" alt="PyPI version">
   </a>
-  <a href="https://github.com/YOUR_USERNAME/cloud-game-starter/blob/main/LICENSE">
+  <a href="https://github.com/rosmontisu/cloud-game-starter/blob/main/LICENSE">
     <img src="https://img.shields.io/pypi/l/cgs-cli" alt="License">
   </a>
   <a href="https://github.com/psf/black">
