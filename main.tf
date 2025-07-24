@@ -66,45 +66,52 @@ resource "aws_instance" "cgs_server" {
 
   # user_data : EC2 인스턴스가 시작될 때 실행되는 스크립트
   user_data = <<-EOF
-
         #!/bin/bash
+        set -e # 스크립트 실행 중 오류 발생 시 즉시 중단
+
         APP_DIR="/home/ec2-user/app"
         LOG_FILE="/home/ec2-user/server.log"
 
-        # 공통 작업: 기본 패키지 업데이트, git 설치
+        # 공통 작업: 기본 패키지 업데이트, git 설치, git clone, 로그 파일 생성 및 권한 설정
         yum update -y
         yum install -y git
 
-        # 공통 작업: git clone
-        sudo -u ec2-user git clone https://github.com/rosmontisu/cloud-game-starter.git $APP_DIR
+        ## 임시로 dev/3로 테스트합니다
+        #sudo -u ec2-user git clone https://github.com/rosmontisu/cloud-game-starter.git $APP_DIR
+        sudo -u ec2-user git clone -b dev/3 --single-branch https://github.com/rosmontisu/cloud-game-starter.git $APP_DIR
 
-        # 공통 작업: 로그 파일 생성 및 권한 설정
+
         touch $LOG_FILE
         chown ec2-user:ec2-user $LOG_FILE
 
-        ## 선택된 언어에 따라 다른 작업 수행
+        ## -- 선택된 언어에 따라 다른 작업 수행 -- 
 
         # C# 서버 배포
         if [ "$${server_language}" == "csharp" ]; then # '$' -> '$$' (이스케이프)
-          
           echo "Deploying C# server..." > $LOG_FILE
+
           rpm -Uvh https://packages.microsoft.com/config/centos/7/packages-microsoft-prod.rpm
           yum install -y dotnet-sdk-7.0 # .NET 7 SDK 설치 (Amazon Linux 2 기준)
           
-          cd $APP_DIR/samples/csharp-echo
           # C# 서버를 백그라운드에서 실행
-          sudo -u ec2-user nohup dotnet run > $LOG_FILE 2>&1 &
+          cd $APP_DIR/samples/csharp-echo
+          sudo -u ec2-user nohup dotnet run >> $LOG_FILE 2>&1 &
 
         # 기본값 (Go) 배포
-        else
+        elif [ "$${server_language}" == "go" ]; then
           echo "Deploying Go server..." > $LOG_FILE
+
           yum install -y golang
 
+          # Go 서버를 백그라운드에서 빌드&실행
           cd $APP_DIR/samples/go-echo
           export GOCACHE=/tmp/gocache
           go build -o server .
-          # Go 서버를 백그라운드에서 실행
-          sudo -u ec2-user nohup ./server > $LOG_FILE 2>&1 &
+          sudo -u ec2-user nohup ./server >> $LOG_FILE 2>&1 &
+
+        else
+          echo "Unknown server language: $${server_language}" > $LOG_FILE
+          exit 1
 
     fi
     EOF
