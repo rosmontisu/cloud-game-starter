@@ -5,7 +5,13 @@ import os
 import locale
 import sys
 from messages import MESSAGES # messages.py
+from enum import Enum
 TERRAFORM_DIR = ".." # Terraform 코드가 있는 부모 디렉토리 경로 설정
+
+# sample server 언어들
+class ServerLanguage(str, Enum):
+    go = "go"
+    csharp = "csharp"
 
 def get_system_language():
     """
@@ -54,18 +60,32 @@ lang = get_system_language()
 if lang not in MESSAGES:
     lang = 'en'
 
-msg = MESSAGES[lang] # 딕셔너리에서 선택한 land으로 불러오기
+msg = MESSAGES[lang] # 딕셔너리에서 선택한 lang으로 불러오기
 console = Console() # rich console 객체 (예쁘게 출력하는거)
 app = typer.Typer() # Typer app
 
 @app.command()
-def deploy():
+def deploy(
+    lang: ServerLanguage = typer.Option(
+        ServerLanguage.go,
+        "--lang", 
+        "-l", 
+        help="Language of the sample server.",
+        case_sensitive=False # go, GO, Go 등 대소문자 구분 false
+    )): # lang 인자 받아줍니다
     """
     Terraform을 사용하여 클라우드에 게임 서버를 배포합니다.
     """
-    console.print(f"[bold blue]{msg['DEPLOY_START']}[/bold blue]")
+    console.print(f"[bold blue]{msg['DEPLOY_START']}[/bold blue] (Language: {lang.value})")
+
     try:
-        subprocess.run(["terraform", "apply", "-auto-approve"], check=True, cwd=TERRAFORM_DIR)
+        # -var 옵션으로 Terraform에 lang 변수 전달
+        command = [
+            "terraform", "apply", "-auto-approve",
+            "-var", f"server_language={lang.value}"
+        ]
+        subprocess.run(command, check=True, cwd=TERRAFORM_DIR)
+        
         console.print(f"[bold green]{msg['DEPLOY_SUCCESS']}[/bold green]")
         info()
     except subprocess.CalledProcessError as e:

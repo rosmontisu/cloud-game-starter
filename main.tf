@@ -49,7 +49,13 @@ data "aws_ami" "amazon_linux_2" {
   }
 }
 
-# 3. EC2 인스턴스 생성
+# 3. EC2 인스턴스 생성 & sample server
+variable "server_language" {
+  type        = string
+  description = "The language of the sample server to deploy (go or csharp)."
+  default     = "go"
+}
+
 resource "aws_instance" "cgs_server" {
   # ami = "ami-<ID>" # Amazon Linux 2 AMI (ap-northeast-2)
   ami             = data.aws_ami.amazon_linux_2.id # 위에서 동적으로 찾은 AMI ID 사용
@@ -60,15 +66,47 @@ resource "aws_instance" "cgs_server" {
 
   # user_data : EC2 인스턴스가 시작될 때 실행되는 스크립트
   user_data = <<-EOF
+
         #!/bin/bash
-        # 서버 환경 설정 및 게임 서버 실행
+        APP_DIR="/home/ec2-user/app"
+        LOG_FILE="/home/ec2-user/server.log"
+
+        # 공통 작업: 기본 패키지 업데이트, git 설치
         yum update -y
-        yum install -y git golang
-        git clone https://github.com/rosmontisu/cloud-game-starter.git /home/ec2-user/app
-        cd /home/ec2-user/app/samples/go-echo
-        export GOCACHE=/tmp/gocache
-        go build -o server .
-        nohup ./server > /home/ec2-user/server.log 2>&1 &
+        yum install -y git
+
+        # 공통 작업: git clone
+        sudo -u ec2-user git clone https://github.com/rosmontisu/cloud-game-starter.git $APP_DIR
+
+        # 공통 작업: 로그 파일 생성 및 권한 설정
+        touch $LOG_FILE
+        chown ec2-user:ec2-user $LOG_FILE
+
+        ## 선택된 언어에 따라 다른 작업 수행
+
+        # C# 서버 배포
+        if [ "$${server_language}" == "csharp" ]; then # '$' -> '$$' (이스케이프)
+          
+          echo "Deploying C# server..." > $LOG_FILE
+          rpm -Uvh https://packages.microsoft.com/config/centos/7/packages-microsoft-prod.rpm
+          yum install -y dotnet-sdk-7.0 # .NET 7 SDK 설치 (Amazon Linux 2 기준)
+          
+          cd $APP_DIR/samples/csharp-echo
+          # C# 서버를 백그라운드에서 실행
+          sudo -u ec2-user nohup dotnet run > $LOG_FILE 2>&1 &
+
+        # 기본값 (Go) 배포
+        else
+          echo "Deploying Go server..." > $LOG_FILE
+          yum install -y golang
+
+          cd $APP_DIR/samples/go-echo
+          export GOCACHE=/tmp/gocache
+          go build -o server .
+          # Go 서버를 백그라운드에서 실행
+          sudo -u ec2-user nohup ./server > $LOG_FILE 2>&1 &
+
+    fi
     EOF
 
   tags = {
