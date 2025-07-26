@@ -4,8 +4,10 @@ import subprocess
 import os
 import locale
 import sys
+from pathlib import Path
 from .messages import MESSAGES # messages.py
-TERRAFORM_DIR = ".." # Terraform 코드가 있는 부모 디렉토리 경로 설정
+TERRAFORM_DIR = Path(__file__).parent / "terraform"
+
 
 def get_system_language():
     """
@@ -49,7 +51,6 @@ def get_system_language():
     # 위 모든 방법으로 실패 시, 기본값 'en' 반환
     return 'en'
 
-
 lang = get_system_language()
 if lang not in MESSAGES:
     lang = 'en'
@@ -58,6 +59,7 @@ msg = MESSAGES[lang] # 딕셔너리에서 선택한 land으로 불러오기
 console = Console() # rich console 객체 (예쁘게 출력하는거)
 app = typer.Typer() # Typer app
 
+
 @app.command()
 def deploy():
     """
@@ -65,13 +67,30 @@ def deploy():
     """
     console.print(f"[bold blue]{msg['DEPLOY_START']}[/bold blue]")
     try:
-        subprocess.run(["terraform", "apply", "-auto-approve"], check=True, cwd=TERRAFORM_DIR)
+        # 1 init, 출력 숨김
+        console.print("  - [yellow]Initializing Terraform...[/yellow]")
+        init_command = ["terraform", "init", "-upgrade"]
+        subprocess.run(init_command, check=True, cwd=TERRAFORM_DIR, capture_output=True)
+
+        # 2 Terraform 배포 apply, 출력 허용
+        console.print("  - [yellow]Applying infrastructure plan...[/yellow]")
+        apply_command = ["terraform", "apply", "-auto-approve"]
+        subprocess.run(apply_command, check=True, cwd=TERRAFORM_DIR)
+        
         console.print(f"[bold green]{msg['DEPLOY_SUCCESS']}[/bold green]")
-        info()
+        info() # 배포 성공 후 자동으로 서버 정보 출력
+        
     except subprocess.CalledProcessError as e:
-        console.print(f"[bold red]{msg['DEPLOY_FAILED']}[/bold red] {e}")
+        error_output = e.stderr.decode() if e.stderr else (e.stdout.decode() if e.stdout else "No error output.")
+        console.print(f"❌ [bold red]{msg['DEPLOY_FAILED']}[/bold red]")
+        console.print(f"  [italic]Failed command: {' '.join(e.cmd)}[/italic]")
+        console.print(f"  [italic]Error details:[/italic]")
+        # 에러 메시지를 좀 더 보기 좋게 들여쓰기하여 출력
+        console.print(f"  > {error_output.strip().replace('\n', '\n  > ')}")
     except FileNotFoundError:
         console.print(f"[bold red]{msg['TERRAFORM_NOT_FOUND']}[/bold red]")
+
+
 
 
 @app.command()
