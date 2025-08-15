@@ -161,7 +161,10 @@ cgs destroy
 > Are you sure you want to destroy all resources? ... [y/N]: y  
 > ✅ All resources have been destroyed.
 
----
+--- 
+
+### System Architecture
+![Cloud Game Starter Architecture Diagram](https://raw.githubusercontent.com/rosmontisu/cloud-game-starter/main/.github/assets/architecture-diagram.png)
 
 ---
 
