@@ -262,3 +262,17 @@ pyrightconfig.json
 
 # Rider 관련 파일
 .idea/
+
+
+# CMake
+# CMake가 생성하는 빌드 폴더들
+[Bb]uild/
+[Bb]uild*/
+out/
+# Visual Studio / CMake 캐시 파일
+.vs/
+CMakeCache.txt
+CMakeLists.txt.user
+*.vcxproj
+*.vcxproj.filters
+*.sln

@@ -163,6 +163,11 @@ cgs destroy
 > 정말로 모든 리소스를 삭제하시겠습니까? ... [y/N]: y  
 > ✅ 모든 리소스가 삭제되었습니다.
 
+--- 
+
+### 시스템 아키텍처
+![Cloud Game Starter Architecture Diagram](https://raw.githubusercontent.com/rosmontisu/cloud-game-starter/main/.github/assets/architecture-diagram.png)
+
 ---
 
 ## 🗺️ 로드맵
