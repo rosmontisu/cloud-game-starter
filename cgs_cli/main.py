@@ -85,7 +85,10 @@ def deploy():
         console.print(f"❌ [bold red]{msg['DEPLOY_FAILED']}[/bold red]")
         console.print(f"  [italic]Failed command: {' '.join(e.cmd)}[/italic]")
         console.print(f"  [italic]Error details:[/italic]")
-        # 에러 메시지를 좀 더 보기 좋게 들여쓰기하여 출력
+        # 에러 메시지를 좀 더 보기 좋게 들여쓰기 중
+        # 중간에 멈추면 그냥 다시 시작하라고 정보 출력
+        console.print("\n💡 [bold yellow]Tip:[/bold yellow] Please check the error message above and resolve the issue.")
+        console.print("   Once resolved, you can run [cyan]`cgs deploy`[/cyan] again to continue the deployment.")
         console.print(f"  > {error_output.strip().replace('\n', '\n  > ')}")
     except FileNotFoundError:
         console.print(f"[bold red]{msg['TERRAFORM_NOT_FOUND']}[/bold red]")
