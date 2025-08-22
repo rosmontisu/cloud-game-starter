@@ -6,8 +6,8 @@ import locale
 import sys
 from pathlib import Path
 from .messages import MESSAGES # messages.py
+import shutil # 파일 복사용
 TERRAFORM_DIR = Path(__file__).parent / "terraform"
-
 
 def get_system_language():
     """
@@ -59,7 +59,6 @@ msg = MESSAGES[lang] # 딕셔너리에서 선택한 land으로 불러오기
 console = Console() # rich console 객체 (예쁘게 출력하는거)
 app = typer.Typer() # Typer app
 
-
 @app.command()
 def deploy():
     """
@@ -85,16 +84,14 @@ def deploy():
         console.print(f"❌ [bold red]{msg['DEPLOY_FAILED']}[/bold red]")
         console.print(f"  [italic]Failed command: {' '.join(e.cmd)}[/italic]")
         console.print(f"  [italic]Error details:[/italic]")
+        console.print(f"  > {error_output.strip().replace('\n', '\n  > ')}")
         # 에러 메시지를 좀 더 보기 좋게 들여쓰기 중
         # 중간에 멈추면 그냥 다시 시작하라고 정보 출력
-        console.print("\n💡 [bold yellow]Tip:[/bold yellow] Please check the error message above and resolve the issue.")
-        console.print("   Once resolved, you can run [cyan]`cgs deploy`[/cyan] again to continue the deployment.")
-        console.print(f"  > {error_output.strip().replace('\n', '\n  > ')}")
+        console.print("\n💡 [bold yellow]Tip:[/bold yellow] Deployment was interrupted.")
+        console.print("   Please check the error message above to resolve the issue.")
+        console.print("   Once resolved, you can run [cyan]`cgs deploy`[/cyan] again to resume the process from where it left off.")
     except FileNotFoundError:
         console.print(f"[bold red]{msg['TERRAFORM_NOT_FOUND']}[/bold red]")
-
-
-
 
 @app.command()
 def destroy():
@@ -111,7 +108,6 @@ def destroy():
         console.print(f"[bold green]{msg['DESTROY_SUCCESS']}[/bold green]")
     except subprocess.CalledProcessError as e:
         console.print(f"[bold red]{msg['DESTROY_FAILED']}[/bold red] {e}")
-
 
 @app.command()
 def info():
